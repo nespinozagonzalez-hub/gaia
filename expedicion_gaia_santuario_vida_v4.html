@@ -1,0 +1,741 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Expedición Gaia V4 — Santuario de la Vida</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07130f; --bg2:#0b1c16; --panel:#122b21; --line:#315142; --line2:#4e7a65;
+  --leaf:#8ef0a8; --leaf-soft:rgba(142,240,168,.14); --gold:#f2d17a; --gold-soft:rgba(242,209,122,.14);
+  --aqua:#8de3dc; --danger:#ff7f7f; --white:#eefaf1; --muted:#a7c6b2; --shadow:0 16px 48px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Rajdhani',sans-serif;color:var(--white);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(142,240,168,.11), transparent 28%),
+    radial-gradient(circle at 80% 10%, rgba(141,227,220,.08), transparent 24%),
+    radial-gradient(circle at 50% 85%, rgba(242,209,122,.08), transparent 30%),
+    linear-gradient(180deg,#040b08 0%, #07130f 45%, #050b09 100%);
+  overflow-x:hidden;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);background-size:48px 48px;opacity:.18}
+button,input,select{font:inherit}
+.screen{display:none;min-height:100vh}.screen.active{display:flex}
+h1,h2,h3,h4{font-family:'Cinzel',serif}
+.micro{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.btn{border:none;cursor:pointer;border-radius:16px;padding:12px 20px;font-weight:700;transition:.22s ease;text-transform:uppercase;letter-spacing:1px}
+.btn-primary{background:linear-gradient(90deg,var(--leaf),#c5ffb6);color:#0b1d12;box-shadow:0 12px 26px rgba(142,240,168,.18)}
+.btn-primary:hover{transform:translateY(-2px) scale(1.01)} .btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-secondary{background:transparent;border:1px solid var(--line2);color:var(--muted)} .btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+.card{background:linear-gradient(180deg, rgba(18,43,33,.9), rgba(10,24,18,.94));border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+.tag{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);border-radius:999px;padding:8px 14px;color:var(--muted);font-size:14px}
+#intro{align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero-fog,.hero-rings{position:absolute;inset:0;pointer-events:none}
+.hero-fog{background:radial-gradient(circle at 20% 40%, rgba(142,240,168,.14), transparent 25%),radial-gradient(circle at 75% 30%, rgba(141,227,220,.08), transparent 20%),radial-gradient(circle at 50% 80%, rgba(242,209,122,.07), transparent 28%);filter:blur(18px)}
+.hero-rings::before,.hero-rings::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:999px;border:1px solid rgba(142,240,168,.12)}
+.hero-rings::before{width:min(78vw,900px);height:min(78vw,900px)} .hero-rings::after{width:min(48vw,540px);height:min(48vw,540px)}
+.intro-shell{position:relative;z-index:2;width:min(1080px,93vw);background:linear-gradient(180deg, rgba(10,22,17,.9), rgba(7,15,11,.96));border:1px solid var(--line);border-radius:32px;overflow:hidden;box-shadow:var(--shadow)}
+.intro-top{padding:34px 34px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.hero-title{font-size:clamp(34px,6vw,72px);line-height:.95;text-transform:uppercase;margin:14px 0 18px}
+.hero-title .a{display:block;color:var(--gold)} .hero-title .b{display:block;color:#fff}
+.hero-desc{max-width:830px;font-size:19px;line-height:1.6;color:#dff1e4} .hero-desc strong{color:var(--leaf)}
+.intro-grid{display:grid;grid-template-columns:1.15fr .95fr;gap:24px;padding:26px 34px 34px}
+.panel h3{font-size:18px;color:var(--gold);margin-bottom:14px;text-transform:uppercase}
+.panel p{font-size:17px;line-height:1.6;color:#dbeee1}
+.info-list{display:grid;gap:12px;margin-top:14px}
+.info-item{display:flex;gap:12px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.info-item .icon{font-size:24px}
+.field{margin-bottom:16px}.field label{display:block;margin-bottom:8px}
+.field input{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;color:#fff;padding:14px 16px;font-size:18px;outline:none}
+.field input:focus{border-color:var(--leaf);box-shadow:0 0 0 4px rgba(142,240,168,.08)}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.choice{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);padding:14px 12px;min-height:124px;cursor:pointer;transition:.2s ease}
+.choice:hover{transform:translateY(-2px);border-color:var(--leaf)} .choice.selected{border-color:var(--gold);background:var(--gold-soft)}
+.choice .icon{font-size:24px;margin-bottom:8px}
+.choice .name{font-weight:700;color:var(--white);font-size:15px}
+.choice .desc{font-size:13px;color:var(--muted);line-height:1.35;margin-top:6px}
+.start-wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+
+#game{flex-direction:column}
+.hud{position:sticky;top:0;z-index:15;display:grid;grid-template-columns:1.2fr auto auto auto auto;gap:14px;align-items:center;padding:12px 20px;background:rgba(6,14,11,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07)}
+.hud-block{display:flex;flex-direction:column;gap:2px}.hud-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.hud-value{font-size:16px;color:#fff}.hud-value strong{color:var(--gold)}
+.timer{font-family:'Cinzel',serif;font-size:28px;color:var(--leaf)} .timer.warning{color:var(--gold)} .timer.danger{color:var(--danger)}
+.seal-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.seal{width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:transparent}
+.seal.done{background:var(--leaf);border-color:var(--leaf);box-shadow:0 0 12px rgba(142,240,168,.35)}
+.game-wrap{display:grid;grid-template-columns:330px 1fr;min-height:calc(100vh - 74px)}
+.sidebar{background:linear-gradient(180deg, rgba(8,18,14,.96), rgba(11,26,20,.96));border-right:1px solid rgba(255,255,255,.07);padding:20px;overflow:auto}
+.sidebar h2{font-size:22px;color:var(--gold);margin-bottom:8px;text-transform:uppercase}.sidebar p{font-size:15px;line-height:1.55;color:var(--muted);margin-bottom:16px}
+.rooms{display:grid;gap:10px}
+.room{width:100%;text-align:left;padding:15px;border-radius:18px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--line);color:#fff;transition:.2s ease}
+.room:hover{border-color:var(--leaf);transform:translateY(-1px)} .room.active{border-color:var(--gold);background:var(--gold-soft)} .room.solved{border-color:var(--leaf);background:var(--leaf-soft)} .room.locked{opacity:.38;pointer-events:none}
+.room-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.room-name{font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}.room-status{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);text-transform:uppercase}.room-text{font-size:14px;color:#d7ece0;line-height:1.35}
+.progress-box,.skills-box,.artifact-box{margin-top:16px;padding:16px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.bar{height:10px;background:#07110d;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.08);margin:10px 0 6px}.bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--leaf));transition:width .35s ease}
+.skill-list{display:grid;gap:8px;margin-top:10px}.skill-item{padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.07);font-size:14px;color:var(--muted);background:rgba(255,255,255,.02)}
+.skill-item.unlocked{color:#eafff0;border-color:rgba(142,240,168,.28);background:rgba(142,240,168,.08)}
+.main{padding:26px;overflow:auto}
+.welcome{min-height:100%;display:flex;align-items:center;justify-content:center;text-align:center}
+.welcome-card{max-width:820px;padding:34px;border-radius:30px;background:rgba(12,27,20,.8);border:1px solid var(--line);box-shadow:var(--shadow)}
+.welcome-code{font-size:clamp(44px,9vw,90px);line-height:1;color:rgba(242,209,122,.12);margin-bottom:12px}.welcome-card h3{font-size:26px;text-transform:uppercase;margin-bottom:12px}.welcome-card p{font-size:18px;line-height:1.7;color:#d7ece0}
+.zone{max-width:1120px;margin:0 auto}
+.zone-header{display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.zone-badge{width:78px;height:78px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(180deg, rgba(242,209,122,.16), rgba(142,240,168,.08));border:1px solid rgba(242,209,122,.18);flex-shrink:0}
+.zone-header h1{font-size:32px;line-height:1.05;text-transform:uppercase}.zone-header h1 span{display:block;color:var(--gold)} .zone-sub{margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.story{padding:18px 20px;border-radius:22px;margin-bottom:18px;background:rgba(242,209,122,.07);border:1px solid rgba(242,209,122,.18)} .story p{font-size:18px;line-height:1.7;color:#f5edd9}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.challenge{border:1px dashed rgba(255,255,255,.16);background:rgba(255,255,255,.02)}
+.challenge h3{color:var(--leaf);margin-bottom:10px;font-size:18px;text-transform:uppercase}.challenge p,.challenge li{font-size:17px;line-height:1.65;color:#e2f1e7}.challenge ul{padding-left:18px;display:grid;gap:8px;margin:10px 0}.challenge strong{color:var(--gold)}
+.section-stack{display:grid;gap:16px}
+.activity{padding:18px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+.activity h4{font-size:17px;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.lock-panel{display:flex;gap:12px;align-items:flex-start;margin-top:10px;padding:14px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.answer-area{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.answer-area input,.final-code input{min-width:250px;max-width:360px;width:100%;background:#091510;border:1px solid var(--line);border-radius:16px;color:#fff;padding:14px 16px;font-size:18px;outline:none}
+.answer-area input:focus,.final-code input:focus{border-color:var(--leaf);box-shadow:0 0 0 4px rgba(142,240,168,.08)}
+.answer-area input.good,.final-code input.good{border-color:var(--leaf)} .answer-area input.bad,.final-code input.bad{border-color:var(--danger)}
+.feedback{min-height:28px;margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:.4px}.feedback.ok{color:var(--leaf)} .feedback.no{color:var(--danger)}
+.option-grid{display:grid;gap:10px;margin-top:12px}
+.option{width:100%;text-align:left;padding:12px 14px;border-radius:16px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#fff;transition:.2s ease}
+.option:hover{border-color:var(--leaf)} .option.correct{border-color:var(--leaf);background:rgba(142,240,168,.1)} .option.incorrect{border-color:var(--danger);background:rgba(255,127,127,.1)} .option.disabled{pointer-events:none;opacity:.92}
+.partial-banner,.solved-banner{margin-top:18px;padding:18px;border-radius:18px}
+.partial-banner{background:rgba(242,209,122,.08);border:1px solid rgba(242,209,122,.22)} .solved-banner{background:rgba(142,240,168,.09);border:1px solid rgba(142,240,168,.28)}
+.partial-banner h4,.solved-banner h4{font-size:18px;text-transform:uppercase;margin-bottom:6px}.partial-banner h4{color:var(--gold)} .solved-banner h4{color:var(--leaf)}
+.clue-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.clue{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--gold)}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.match-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.match-row select{background:#091510;border:1px solid var(--line);color:#fff;padding:10px 12px;border-radius:12px}
+.word-grid{display:grid;grid-template-columns:repeat(10,34px);gap:6px;justify-content:start;margin-top:14px}
+.word-cell{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-weight:700}
+.word-cell.found{background:rgba(142,240,168,.16);border-color:var(--leaf);color:var(--leaf)}
+.word-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.memory-grid{display:grid;grid-template-columns:repeat(4, minmax(80px,1fr));gap:10px;margin-top:14px}
+.memory-card{min-height:82px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;cursor:pointer;font-weight:700}
+.memory-card.flipped,.memory-card.matched{background:rgba(242,209,122,.12);border-color:var(--gold)}
+.fill-blank{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.fill-blank input{width:180px;background:#091510;border:1px solid var(--line);color:#fff;padding:10px 12px;border-radius:12px}
+.sort-line{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.sort-btn{padding:10px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);cursor:pointer;color:#fff}
+.sort-btn.selected{background:rgba(142,240,168,.12);border-color:var(--leaf)}
+.toast{position:fixed;right:18px;bottom:18px;z-index:60;max-width:370px;background:linear-gradient(180deg,#11231b,#0a1712);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:0 20px 40px rgba(0,0,0,.28);opacity:0;transform:translateY(20px);pointer-events:none;transition:.25s ease}
+.toast.show{opacity:1;transform:translateY(0)} .toast strong{display:block;color:var(--gold);font-size:14px;text-transform:uppercase;margin-bottom:4px}.toast span{font-size:15px;color:#e2f1e7;line-height:1.45}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.76);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:40;padding:20px}
+.modal.show{display:flex}.modal-box{width:min(740px,94vw);background:linear-gradient(180deg,#11231b,#09130f);border:1px solid var(--line);border-radius:26px;padding:28px;box-shadow:var(--shadow)}
+.modal-box h3{font-size:24px;color:var(--gold);margin-bottom:12px;text-transform:uppercase}.modal-box p,.modal-box li{font-size:18px;line-height:1.65;color:#e3f0e7}.modal-box ul{padding-left:20px;display:grid;gap:8px;margin:10px 0}.close-row{display:flex;justify-content:flex-end;margin-top:14px}
+#final{align-items:center;justify-content:center;position:relative;overflow:hidden}
+#final::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 40%, rgba(142,240,168,.18), transparent 30%),radial-gradient(circle at 50% 50%, rgba(242,209,122,.10), transparent 44%)}
+.final-card{position:relative;z-index:2;width:min(940px,92vw);padding:38px;border-radius:32px;border:1px solid rgba(142,240,168,.25);background:linear-gradient(180deg, rgba(10,24,18,.9), rgba(7,14,11,.96));box-shadow:0 0 40px rgba(142,240,168,.12);text-align:center}
+.final-emoji{font-size:82px;margin-bottom:16px}.final-card h1{font-size:clamp(30px,5vw,56px);text-transform:uppercase;color:var(--leaf);margin-bottom:8px}.final-sub{font-family:'Share Tech Mono',monospace;letter-spacing:3px;color:#cfe9d7;font-size:13px;text-transform:uppercase;margin-bottom:24px}
+.final-msg{text-align:left;padding:24px;border-radius:24px;background:rgba(255,255,255,.03);border:1px solid rgba(142,240,168,.16);margin-bottom:24px}.final-msg p{font-size:18px;line-height:1.75;color:#f0fff4}
+.stats{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}.stat{min-width:170px;padding:18px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)} .stat strong{display:block;font-size:30px;color:var(--gold);margin-bottom:6px}
+@media (max-width:980px){.intro-grid,.grid-2{grid-template-columns:1fr}.game-wrap{grid-template-columns:1fr}.sidebar{border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}.hud{grid-template-columns:1fr 1fr;gap:10px}}
+@media (max-width:720px){.choices{grid-template-columns:1fr}.word-grid{grid-template-columns:repeat(10,28px)}.word-cell{width:28px;height:28px}.memory-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<section id="intro" class="screen active">
+  <div class="hero-fog"></div><div class="hero-rings"></div>
+  <div class="intro-shell">
+    <div class="intro-top">
+      <div class="micro">Santuario de Gaia · protocolo de restauración biológica</div>
+      <div class="hero-title"><span class="a">Expedición Gaia</span><span class="b">El Santuario de la Vida</span></div>
+      <p class="hero-desc">Bienvenido, <strong>Mister Nicolás Espinoza</strong>. Esta nueva versión extiende cada misión del santuario: ahora tendrás desafíos más largos, variados y misteriosos, con mecanismos internos que se irán abriendo poco a poco.</p>
+    </div>
+    <div class="intro-grid">
+      <div class="card panel">
+        <h3>Qué trae esta nueva expedición</h3>
+        <p>Las cámaras ahora tienen más profundidad: términos pareados, quiz encadenados, sopa de letras, memorice, completar frases, secuencias y candados finales.</p>
+        <div class="info-list">
+          <div class="info-item"><div class="icon">🧩</div><div><strong>Más variedad</strong><span>Ya no será solo leer y responder: cada sala tiene mecánicas distintas.</span></div></div>
+          <div class="info-item"><div class="icon">🔐</div><div><strong>Más largo y progresivo</strong><span>Las misiones se abren por etapas internas antes del sello final.</span></div></div>
+          <div class="info-item"><div class="icon">🌎</div><div><strong>Mismo foco científico</strong><span>Todo sigue alineado con fotosíntesis, transporte vegetal y redes tróficas.</span></div></div>
+        </div>
+      </div>
+      <div class="card panel">
+        <h3>Forja tu expedicionista</h3>
+        <div class="field">
+          <label class="micro" for="playerName">Nombre del expedicionista</label>
+          <input id="playerName" type="text" maxlength="24" placeholder="Escribe tu nombre" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="micro">Selecciona tu rol</label>
+          <div class="choices" id="roles">
+            <div class="choice" data-role="Guardián de la Flora" onclick="selectRole(this)"><div class="icon">🍃</div><div class="name">Guardián de la Flora</div><div class="desc">Observa hojas, estructuras y señales vegetales.</div></div>
+            <div class="choice" data-role="Rastreador Trófico" onclick="selectRole(this)"><div class="icon">🧭</div><div class="name">Rastreador Trófico</div><div class="desc">Interpreta relaciones alimentarias y rutas de energía.</div></div>
+            <div class="choice" data-role="Defensor del Equilibrio" onclick="selectRole(this)"><div class="icon">🛡️</div><div class="name">Defensor del Equilibrio</div><div class="desc">Analiza desequilibrios y propone soluciones.</div></div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="micro">Selecciona tu artefacto</label>
+          <div class="choices" id="artifacts">
+            <div class="choice" data-artifact="Lupa botánica" onclick="selectArtifact(this)"><div class="icon">🔎</div><div class="name">Lupa botánica</div><div class="desc">Comienzas con una pista gratuita.</div></div>
+            <div class="choice" data-artifact="Bitácora de campo" onclick="selectArtifact(this)"><div class="icon">📜</div><div class="name">Bitácora de campo</div><div class="desc">Recibes ayudas teóricas extra.</div></div>
+            <div class="choice" data-artifact="Cristal solar" onclick="selectArtifact(this)"><div class="icon">☀️</div><div class="name">Cristal solar</div><div class="desc">Recibes +5 minutos de energía.</div></div>
+          </div>
+        </div>
+        <div class="start-wrap">
+          <button id="startBtn" class="btn btn-primary" disabled onclick="startGame()">Iniciar expedición</button>
+          <button class="btn btn-secondary" onclick="showHelp()">Ver instrucciones</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="game" class="screen">
+  <div class="hud">
+    <div class="hud-block"><div class="hud-label">Misión activa</div><div class="hud-value">Gaia · <strong>Restauración extendida</strong></div></div>
+    <div class="hud-block"><div class="hud-label">Expedicionista</div><div class="hud-value" id="hudName">—</div></div>
+    <div class="hud-block"><div class="hud-label">Rango actual</div><div class="hud-value" id="hudRank">Aprendiz de expedición</div></div>
+    <div class="hud-block"><div class="hud-label">Tiempo restante</div><div class="timer" id="timer">45:00</div></div>
+    <div class="hud-block" style="justify-self:end;text-align:right;"><div class="hud-label">Sellos restaurados</div><div class="seal-row" id="sealRow"></div></div>
+  </div>
+  <div class="game-wrap">
+    <aside class="sidebar">
+      <h2>Mapa del santuario</h2>
+      <p>Cada misión es más larga. No se abrirá de una sola respuesta: tendrás que superar varios mecanismos internos antes del sello final.</p>
+      <div class="rooms" id="roomList"></div>
+      <div class="progress-box">
+        <div class="micro">Progreso de restauración</div>
+        <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+        <div class="hud-value"><strong id="progressText">0%</strong> del santuario restaurado</div>
+      </div>
+      <div class="artifact-box"><div class="micro">Artefacto activo</div><p id="artifactLabel" style="margin-top:8px;font-size:16px;color:#effaf1;">—</p></div>
+      <div class="skills-box"><div class="micro">Habilidades desbloqueadas</div><div class="skill-list" id="skillList"></div></div>
+    </aside>
+    <main class="main" id="mainPanel">
+      <div class="welcome">
+        <div class="welcome-card">
+          <div class="welcome-code">GAIA</div>
+          <h3>La versión extendida está activa</h3>
+          <p>Selecciona una cámara. Esta vez cada misión tendrá más capas, más desafíos y más mecanismos internos que irán respondiendo a medida que avances.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<section id="final" class="screen">
+  <div class="final-card">
+    <div class="final-emoji">🌎</div>
+    <h1>Santuario restaurado</h1>
+    <div class="final-sub">Versión extendida completada</div>
+    <div class="final-msg"><p>Has recorrido una expedición más larga, diversa y desafiante. No solo recordaste conceptos: los relacionaste, los buscaste, los emparejaste, los conectaste y los aplicaste para devolver la vida al Santuario de Gaia.</p></div>
+    <div class="stats">
+      <div class="stat"><strong id="finalName">—</strong><span>Expedicionista</span></div>
+      <div class="stat"><strong id="finalRank">—</strong><span>Rango final</span></div>
+      <div class="stat"><strong id="finalTime">00:00</strong><span>Tiempo restante</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="modal"><div class="modal-box"><h3 id="modalTitle">Instrucciones</h3><div id="modalText"></div><div class="close-row"><button class="btn btn-primary" onclick="closeModal()">Entendido</button></div></div></div>
+<div class="toast" id="toast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+
+<script>
+const missions = [
+  {id:'m1',name:'Cámara de la Hoja Solar',icon:'🌿',short:'Fotosíntesis extendida',subtitle:'Pareados y quiz del proceso',key:'SOL',skill:'Visión Botánica',narrative:'La hoja sagrada no abrirá su cámara con una sola respuesta. Primero debes reconstruir sus conceptos, luego superar un pequeño examen del santuario.',theory:['La fotosíntesis necesita luz solar, agua y dióxido de carbono.','Produce glucosa y oxígeno.','Las hojas son el principal lugar donde ocurre este proceso.'],hint:'Relaciona bien cada concepto antes de pasar al quiz. Luego responde las 3 preguntas correctamente.'},
+  {id:'m2',name:'Cámara de la Savia Viva',icon:'🌱',short:'Sopa de letras y memorice',subtitle:'Xilema, floema y transporte',key:'SAVIA',skill:'Lectura del Flujo Vegetal',narrative:'Los canales del santuario responden a palabras ocultas y símbolos emparejados. Aquí no bastará con memorizar: debes observar con atención.',theory:['Xilema transporta savia bruta.','Floema transporta savia elaborada.','La savia bruta sube desde la raíz; la elaborada se distribuye desde las hojas.'],hint:'Primero encuentra 4 palabras escondidas. Después empareja cada estructura con su función.'},
+  {id:'m3',name:'Cámara de los Guardianes del Bosque',icon:'🦉',short:'Quiz y frase incompleta',subtitle:'Roles de los seres vivos',key:'VIDA',skill:'Lectura del Ecosistema',narrative:'Los guardianes del bosque exigen precisión. Primero deberás responder su prueba, y luego completar una frase sagrada del ecosistema.',theory:['Los productores fabrican su alimento.','Los consumidores obtienen energía al alimentarse de otros seres vivos.','Los descomponedores reciclan materia orgánica.'],hint:'Resuelve el quiz completo y luego piensa quién produce, quién consume y quién descompone.'},
+  {id:'m4',name:'Cámara del Camino de la Energía',icon:'⚡',short:'Secuencia y quiz extendido',subtitle:'Cadenas tróficas',key:'FLUJO',skill:'Rastreo Trófico',narrative:'La energía no fluye si el camino está desordenado. En esta cámara tendrás que ordenar la ruta y luego demostrar que entiendes sus consecuencias.',theory:['La energía entra al ecosistema por los productores.','Las flechas muestran hacia dónde va la energía.','Si falta un eslabón, el resto puede alterarse.'],hint:'Ordena correctamente la cadena y después responde el quiz completo.'},
+  {id:'m5',name:'Cámara de la Red Invisible',icon:'🕸️',short:'Pareados y quiz de impacto',subtitle:'Tramas tróficas y acción humana',key:'RED',skill:'Análisis Ecosistémico',narrative:'La red invisible no se reconstruye sola. Deberás unir causas y consecuencias, y luego analizar amenazas humanas que alteran el equilibrio.',theory:['Una trama trófica reúne varias cadenas conectadas.','Las acciones humanas pueden alterar muchas relaciones del ecosistema al mismo tiempo.'],hint:'Primero une cada acción con su efecto. Luego responde el quiz final de la cámara.'},
+  {id:'m6',name:'Núcleo del Equilibrio',icon:'🔆',short:'Caso integrador y código final',subtitle:'Cierre del santuario',key:'',skill:'Restaurador de Gaia',narrative:'Ya viste hojas, savia, roles, cadenas y redes. Ahora el núcleo exige un último caso y la activación del código final.',theory:['La base de la vida del ecosistema comienza en las plantas.','Su alimento luego sostiene las cadenas y tramas tróficas.','El equilibrio depende de la relación entre todos los componentes.'],hint:'Completa el caso integrador y luego usa la primera letra de cada clave: SOL, SAVIA, VIDA, FLUJO y RED.'}
+];
+const ranks=[{min:0,title:'Aprendiz de expedición'},{min:1,title:'Explorador de Gaia'},{min:3,title:'Guardián del Santuario'},{min:5,title:'Restaurador del Equilibrio'}];
+const state={playerName:'',role:'',artifact:'',time:45*60,freeHint:false,showExtraTheory:false,currentMission:null,solvedCount:0,missionProgress:{},completedKeys:[],skills:[],memorySelection:[],memoryMatched:0,sortSelection:[]};
+let timerInterval=null;
+
+function selectRole(el){document.querySelectorAll('#roles .choice').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');state.role=el.dataset.role;checkReady();}
+function selectArtifact(el){document.querySelectorAll('#artifacts .choice').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');state.artifact=el.dataset.artifact;checkReady();}
+document.getElementById('playerName').addEventListener('input',checkReady);
+function checkReady(){const name=document.getElementById('playerName').value.trim();document.getElementById('startBtn').disabled=!(name&&state.role&&state.artifact);}
+
+function startGame(){
+  state.playerName=document.getElementById('playerName').value.trim();
+  if(state.artifact==='Cristal solar') state.time=50*60;
+  if(state.artifact==='Lupa botánica') state.freeHint=true;
+  if(state.artifact==='Bitácora de campo') state.showExtraTheory=true;
+  missions.forEach((m,i)=>state.missionProgress[m.id]={unlocked:i===0,completed:false,stage:0});
+  document.getElementById('hudName').textContent=`${state.playerName} · ${state.role}`;
+  document.getElementById('artifactLabel').textContent=state.artifact;
+  updateRank(); buildSeals(); buildRooms(); buildSkills(); updateProgress(); updateTimerDisplay();
+  document.getElementById('intro').classList.remove('active'); document.getElementById('game').classList.add('active');
+  startTimer();
+  toast('Expedición activada','La versión extendida del santuario ya está lista.');
+}
+
+function buildSeals(){const row=document.getElementById('sealRow');row.innerHTML='';for(let i=0;i<6;i++){const d=document.createElement('div');d.className='seal'+(i<state.solvedCount?' done':'');row.appendChild(d);}}
+function buildSkills(){const list=document.getElementById('skillList');list.innerHTML='';['Visión Botánica','Lectura del Flujo Vegetal','Lectura del Ecosistema','Rastreo Trófico','Análisis Ecosistémico','Restaurador de Gaia'].forEach(n=>{const d=document.createElement('div');d.className='skill-item'+(state.skills.includes(n)?' unlocked':'');d.textContent=(state.skills.includes(n)?'✓ ':'— ')+n;list.appendChild(d);});}
+function buildRooms(){
+  const roomList=document.getElementById('roomList');roomList.innerHTML='';
+  missions.forEach(m=>{const prog=state.missionProgress[m.id];const btn=document.createElement('button');let cls='room';if(!prog.unlocked)cls+=' locked';if(prog.completed)cls+=' solved';if(state.currentMission===m.id)cls+=' active';btn.className=cls;btn.onclick=()=>openMission(m.id);btn.innerHTML=`<div class="room-top"><div class="room-name">${m.icon} ${m.name}</div><div class="room-status">${prog.completed?'Sello restaurado':prog.unlocked?'Disponible':'Bloqueada'}</div></div><div class="room-text">${m.short}</div>`;roomList.appendChild(btn);});
+}
+function updateProgress(){const percent=Math.round((state.solvedCount/missions.length)*100);document.getElementById('barFill').style.width=percent+'%';document.getElementById('progressText').textContent=percent+'%';buildSeals();buildRooms();buildSkills();updateRank();}
+function updateRank(){let rank=ranks[0].title;ranks.forEach(r=>{if(state.solvedCount>=r.min)rank=r.title;});document.getElementById('hudRank').textContent=rank;}
+function startTimer(){clearInterval(timerInterval);timerInterval=setInterval(()=>{state.time--;updateTimerDisplay();if(state.time<=0){clearInterval(timerInterval);showModal('La energía del santuario se agotó','<p>El tiempo llegó a cero. Puedes seguir explorando o reiniciar el archivo.</p>');}},1000);}
+function updateTimerDisplay(){const t=document.getElementById('timer');const m=Math.floor(state.time/60).toString().padStart(2,'0');const s=(state.time%60).toString().padStart(2,'0');t.textContent=`${m}:${s}`;t.classList.remove('warning','danger');if(state.time<=300)t.classList.add('danger');else if(state.time<=600)t.classList.add('warning');}
+
+function openMission(id){
+  state.currentMission=id; buildRooms();
+  const m=missions.find(x=>x.id===id); const prog=state.missionProgress[id];
+  let html = `
+  <div class="zone">
+    <div class="hint-bar">
+      <div class="tag">${m.icon} ${m.short}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="useHint('${m.id}')">Usar pista ${state.freeHint?'(gratis)':'(-2 min)'}</button>
+        <button class="btn btn-secondary" onclick="showTheory('${m.id}')">Ver guía</button>
+      </div>
+    </div>
+    <div class="zone-header"><div class="zone-badge">${m.icon}</div><div><h1>${m.name}<span>${m.subtitle}</span></h1><div class="zone-sub">Sala ${missions.indexOf(m)+1} · Versión extendida</div></div></div>
+    <div class="story"><p>${m.narrative}</p></div>
+    <div class="grid-2">
+      <div class="card challenge"><h3>Bitácora científica</h3><ul>${m.theory.map(x=>`<li>${x}</li>`).join('')}</ul>${state.showExtraTheory?`<div class="partial-banner"><h4>Ayuda extra del artefacto</h4><p>${m.hint}</p></div>`:''}</div>
+      <div class="card challenge"><h3>Estado del sello</h3><p>Esta cámara tiene etapas más largas. Debes completar todos sus mecanismos internos antes de liberar el candado final.</p><div class="clue-strip">${prog.completed?`<div class="clue">Clave recuperada: ${m.key||'NÚCLEO'}</div>`:`<div class="clue">Etapa actual: ${prog.stage+1}</div>`}${state.skills.includes(m.skill)?`<div class="clue">Habilidad: ${m.skill}</div>`:''}</div></div>
+    </div>`;
+  if(id==='m1') html += renderM1();
+  if(id==='m2') html += renderM2();
+  if(id==='m3') html += renderM3();
+  if(id==='m4') html += renderM4();
+  if(id==='m5') html += renderM5();
+  if(id==='m6') html += renderM6();
+  if(prog.completed){
+    html += `<div class="solved-banner"><h4>Candado biológico liberado</h4><p>Has restaurado la cámara <strong>${m.name}</strong>. Clave recuperada: <strong>${m.key||'NÚCLEO'}</strong>. Habilidad desbloqueada: <strong>${m.skill}</strong>.</p></div>`;
+  }
+  html += `</div>`;
+  document.getElementById('mainPanel').innerHTML = html;
+}
+
+/* Mission renderers */
+function renderM1(){
+  const s=state.missionProgress.m1.stage;
+  return `
+  <div class="section-stack">
+    <div class="card challenge">
+      <h3>Etapa 1 · Términos pareados</h3>
+      <p>Une correctamente cada elemento con su relación en la fotosíntesis.</p>
+      <div class="match-grid">
+        <div class="activity">
+          <div class="match-row"><span>Luz solar</span><select id="m1a"><option value="">Selecciona</option><option value="energia">Fuente de energía</option><option value="gas">Gas que entra</option><option value="resultado">Producto final</option></select></div>
+          <div class="match-row"><span>Agua</span><select id="m1b"><option value="">Selecciona</option><option value="raiz">Entra desde la raíz</option><option value="gas">Gas que entra</option><option value="resultado">Producto final</option></select></div>
+          <div class="match-row"><span>Dióxido de carbono</span><select id="m1c"><option value="">Selecciona</option><option value="gas">Gas que entra por la hoja</option><option value="raiz">Sube desde la raíz</option><option value="resultado">Producto final</option></select></div>
+          <button class="btn btn-primary" onclick="checkM1Match()">Comprobar pareados</button>
+          <div id="m1matchfb" class="feedback"></div>
+        </div>
+        <div class="activity">
+          <h4>Objetivo del mecanismo</h4>
+          <p>Debes relacionar correctamente los tres conceptos. Cuando lo logres, se abrirá el quiz de la hoja solar.</p>
+        </div>
+      </div>
+    </div>
+    ${s>=1?renderM1Quiz():''}
+    ${s>=2?`<div class="partial-banner"><h4>Quiz superado</h4><p>La cámara reconoce tu dominio del proceso fotosintético. El sello final ya responde a tu presencia.</p></div>`:''}
+  </div>`;
+}
+function renderM1Quiz(){
+  return `<div class="card challenge">
+    <h3>Etapa 2 · Quiz de la Hoja Solar</h3>
+    <div class="activity"><h4>Pregunta 1</h4><div class="option-grid">
+      <button class="option" onclick="m1quiz(1,false,this)">La fotosíntesis ocurre solo en las raíces</button>
+      <button class="option" onclick="m1quiz(1,true,this)">La fotosíntesis permite fabricar alimento</button>
+      <button class="option" onclick="m1quiz(1,false,this)">La fotosíntesis solo produce agua</button>
+    </div></div>
+    <div class="activity"><h4>Pregunta 2</h4><div class="option-grid">
+      <button class="option" onclick="m1quiz(2,false,this)">La glucosa es un gas</button>
+      <button class="option" onclick="m1quiz(2,false,this)">El oxígeno entra desde el suelo</button>
+      <button class="option" onclick="m1quiz(2,true,this)">El oxígeno es uno de los productos</button>
+    </div></div>
+    <div class="activity"><h4>Pregunta 3</h4><div class="option-grid">
+      <button class="option" onclick="m1quiz(3,true,this)">La luz entrega energía al proceso</button>
+      <button class="option" onclick="m1quiz(3,false,this)">La luz reemplaza al agua</button>
+      <button class="option" onclick="m1quiz(3,false,this)">La luz es un descomponedor</button>
+    </div></div>
+    <div id="m1quizfb" class="feedback"></div>
+  </div>`;
+}
+function renderM2(){
+  const s=state.missionProgress.m2.stage;
+  return `
+  <div class="section-stack">
+    <div class="card challenge">
+      <h3>Etapa 1 · Sopa de letras del santuario</h3>
+      <p>Haz clic en el botón para revelar las 4 palabras escondidas. Cuando aparezcan todas, el primer mecanismo se abrirá.</p>
+      <div class="word-grid" id="m2grid"></div>
+      <div class="word-legend">
+        <div class="clue">XILEMA</div><div class="clue">FLOEMA</div><div class="clue">SAVIA</div><div class="clue">RAIZ</div>
+      </div>
+      <div class="answer-area"><button class="btn btn-primary" onclick="solveWordSearch()">Revelar palabras encontradas</button></div>
+      <div id="m2wordfb" class="feedback"></div>
+    </div>
+    ${s>=1?renderM2Memory():''}
+  </div>`;
+}
+function renderM2Memory(){
+  return `<div class="card challenge">
+    <h3>Etapa 2 · Memorice vegetal</h3>
+    <p>Encuentra las parejas correctas entre estructura y función.</p>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <div id="memoryfb" class="feedback"></div>
+  </div>`;
+}
+function renderM3(){
+  const s=state.missionProgress.m3.stage;
+  return `<div class="section-stack">
+    <div class="card challenge">
+      <h3>Etapa 1 · Quiz de los guardianes</h3>
+      <div class="activity"><h4>Pregunta 1</h4><div class="option-grid">
+        <button class="option" onclick="m3quiz(1,true,this)">Una planta es productora</button>
+        <button class="option" onclick="m3quiz(1,false,this)">Un zorro es productor</button>
+        <button class="option" onclick="m3quiz(1,false,this)">Un hongo fabrica luz</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 2</h4><div class="option-grid">
+        <button class="option" onclick="m3quiz(2,false,this)">Los descomponedores fabrican el Sol</button>
+        <button class="option" onclick="m3quiz(2,true,this)">Los descomponedores reciclan restos orgánicos</button>
+        <button class="option" onclick="m3quiz(2,false,this)">Los consumidores producen glucosa</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 3</h4><div class="option-grid">
+        <button class="option" onclick="m3quiz(3,false,this)">El conejo es descomponedor</button>
+        <button class="option" onclick="m3quiz(3,true,this)">El zorro es consumidor</button>
+        <button class="option" onclick="m3quiz(3,false,this)">Las bacterias son productoras</button>
+      </div></div>
+      <div id="m3quizfb" class="feedback"></div>
+    </div>
+    ${s>=1?`<div class="card challenge">
+      <h3>Etapa 2 · Completa la frase sagrada</h3>
+      <p>Completa correctamente la frase del santuario.</p>
+      <div class="fill-blank">
+        <span>Los</span><input id="m3f1" placeholder="rol 1">
+        <span>fabrican su alimento; los</span><input id="m3f2" placeholder="rol 2">
+        <span>se alimentan de otros; y los</span><input id="m3f3" placeholder="rol 3">
+        <span>reciclan materia orgánica.</span>
+      </div>
+      <div class="answer-area"><button class="btn btn-primary" onclick="checkM3Fill()">Comprobar frase</button></div>
+      <div id="m3fillfb" class="feedback"></div>
+    </div>`:''}
+  </div>`;
+}
+function renderM4(){
+  const s=state.missionProgress.m4.stage;
+  return `<div class="section-stack">
+    <div class="card challenge">
+      <h3>Etapa 1 · Ordena el camino</h3>
+      <p>Haz clic sobre los elementos en el orden correcto para formar la cadena: Sol → pasto → conejo → zorro.</p>
+      <div class="sort-line">
+        <button class="sort-btn" onclick="selectSort('conejo',this)">Conejo</button>
+        <button class="sort-btn" onclick="selectSort('sol',this)">Sol</button>
+        <button class="sort-btn" onclick="selectSort('zorro',this)">Zorro</button>
+        <button class="sort-btn" onclick="selectSort('pasto',this)">Pasto</button>
+      </div>
+      <div class="answer-area">
+        <button class="btn btn-secondary" onclick="resetSort()">Reiniciar orden</button>
+        <button class="btn btn-primary" onclick="checkSort()">Comprobar secuencia</button>
+      </div>
+      <div id="m4sortfb" class="feedback"></div>
+    </div>
+    ${s>=1?`<div class="card challenge">
+      <h3>Etapa 2 · Quiz del flujo energético</h3>
+      <div class="activity"><h4>Pregunta 1</h4><div class="option-grid">
+        <button class="option" onclick="m4quiz(1,true,this)">La energía entra por los productores</button>
+        <button class="option" onclick="m4quiz(1,false,this)">La energía entra por los descomponedores</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 2</h4><div class="option-grid">
+        <button class="option" onclick="m4quiz(2,false,this)">Si desaparece el productor no ocurre nada</button>
+        <button class="option" onclick="m4quiz(2,true,this)">Si desaparece el productor se altera la cadena</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 3</h4><div class="option-grid">
+        <button class="option" onclick="m4quiz(3,true,this)">Las flechas muestran paso de energía</button>
+        <button class="option" onclick="m4quiz(3,false,this)">Las flechas muestran color del suelo</button>
+      </div></div>
+      <div id="m4quizfb" class="feedback"></div>
+    </div>`:''}
+  </div>`;
+}
+function renderM5(){
+  const s=state.missionProgress.m5.stage;
+  return `<div class="section-stack">
+    <div class="card challenge">
+      <h3>Etapa 1 · Pareados de impacto</h3>
+      <p>Relaciona cada acción humana con su posible consecuencia en la red trófica.</p>
+      <div class="match-grid">
+        <div class="activity">
+          <div class="match-row"><span>Contaminación del río</span><select id="m5a"><option value="">Selecciona</option><option value="peces">Afecta organismos acuáticos</option><option value="arboles">Disminuyen árboles por tala</option><option value="caza">Faltan depredadores</option></select></div>
+          <div class="match-row"><span>Tala de árboles</span><select id="m5b"><option value="">Selecciona</option><option value="arboles">Se reduce hábitat y productores</option><option value="peces">Afecta organismos acuáticos</option><option value="caza">Faltan depredadores</option></select></div>
+          <div class="match-row"><span>Caza excesiva</span><select id="m5c"><option value="">Selecciona</option><option value="caza">Se altera población de otras especies</option><option value="peces">Afecta organismos acuáticos</option><option value="arboles">Se reduce hábitat y productores</option></select></div>
+          <button class="btn btn-primary" onclick="checkM5Match()">Comprobar relaciones</button>
+          <div id="m5matchfb" class="feedback"></div>
+        </div>
+        <div class="activity">
+          <h4>Objetivo</h4>
+          <p>Cuando vincules correctamente cada acción con su efecto, se abrirá el análisis final de la red invisible.</p>
+        </div>
+      </div>
+    </div>
+    ${s>=1?`<div class="card challenge">
+      <h3>Etapa 2 · Quiz de amenaza ecológica</h3>
+      <div class="activity"><h4>Pregunta 1</h4><div class="option-grid">
+        <button class="option" onclick="m5quiz(1,true,this)">Una trama trófica reúne varias cadenas conectadas</button>
+        <button class="option" onclick="m5quiz(1,false,this)">Una trama es solo una cadena recta</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 2</h4><div class="option-grid">
+        <button class="option" onclick="m5quiz(2,false,this)">Si una especie desaparece, las demás no cambian</button>
+        <button class="option" onclick="m5quiz(2,true,this)">Si una especie desaparece, otras pueden verse afectadas</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 3</h4><div class="option-grid">
+        <button class="option" onclick="m5quiz(3,true,this)">La acción humana puede alterar el equilibrio del ecosistema</button>
+        <button class="option" onclick="m5quiz(3,false,this)">Las acciones humanas no influyen en la red</button>
+      </div></div>
+      <div id="m5quizfb" class="feedback"></div>
+    </div>`:''}
+  </div>`;
+}
+function renderM6(){
+  const s=state.missionProgress.m6.stage;
+  return `<div class="section-stack">
+    <div class="card challenge">
+      <h3>Etapa 1 · Caso integrador del núcleo</h3>
+      <div class="activity"><h4>Pregunta 1</h4><div class="option-grid">
+        <button class="option" onclick="m6quiz(1,false,this)">Si faltan plantas, aumenta la base del ecosistema</button>
+        <button class="option" onclick="m6quiz(1,true,this)">Si faltan plantas, se reduce la base de alimento y energía</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 2</h4><div class="option-grid">
+        <button class="option" onclick="m6quiz(2,true,this)">El alimento que producen las plantas sostiene luego a otros seres vivos</button>
+        <button class="option" onclick="m6quiz(2,false,this)">El alimento de las plantas no tiene relación con las cadenas tróficas</button>
+      </div></div>
+      <div class="activity"><h4>Pregunta 3</h4><div class="option-grid">
+        <button class="option" onclick="m6quiz(3,true,this)">El equilibrio depende de la relación entre varios organismos y factores</button>
+        <button class="option" onclick="m6quiz(3,false,this)">El equilibrio depende solo del clima</button>
+      </div></div>
+      <div id="m6quizfb" class="feedback"></div>
+    </div>
+    ${s>=1?`<div class="card challenge">
+      <h3>Etapa 2 · Código final del santuario</h3>
+      <p>Ingresa el código formado por la primera letra de cada clave recuperada, en orden de misión.</p>
+      <div class="clue-strip">${state.completedKeys.map(k=>`<div class="clue">${k}</div>`).join('')}</div>
+      <div class="final-code"><input id="m6code" placeholder="Ingresa el código final"><button class="btn btn-primary" onclick="checkM6Code()">Activar núcleo</button></div>
+      <div id="m6codefb" class="feedback"></div>
+    </div>`:''}
+  </div>`;
+}
+
+/* M1 */
+const m1answers = {q1:false,q2:false,q3:false};
+function checkM1Match(){
+  const ok = document.getElementById('m1a').value==='energia' && document.getElementById('m1b').value==='raiz' && document.getElementById('m1c').value==='gas';
+  const fb=document.getElementById('m1matchfb');
+  if(ok){fb.className='feedback ok';fb.textContent='Pareados correctos. El quiz de la hoja solar se ha abierto.'; advanceStage('m1');}
+  else{fb.className='feedback no';fb.textContent='Aún hay relaciones incorrectas. Revisa bien cada elemento.';}
+}
+function m1quiz(n,correct,btn){
+  btn.parentElement.querySelectorAll('.option').forEach(b=>b.classList.add('disabled'));
+  btn.classList.add(correct?'correct':'incorrect');
+  if(correct) m1answers['q'+n]=true;
+  const all = m1answers.q1 && m1answers.q2 && m1answers.q3;
+  const fb=document.getElementById('m1quizfb');
+  fb.className = correct ? 'feedback ok':'feedback no';
+  fb.textContent = correct ? 'Respuesta correcta.' : 'Esa opción no activa el mecanismo.';
+  if(all){fb.className='feedback ok';fb.textContent='Quiz completo. La hoja solar libera su sello.'; completeMission('m1');}
+}
+
+/* M2 */
+const wordRows = [
+  ['X','I','L','E','M','A','Q','R','T','Y'],
+  ['P','A','S','A','V','I','A','L','M','N'],
+  ['Q','W','E','R','T','Y','F','L','O','E'],
+  ['R','A','I','Z','U','I','O','M','A','M'],
+  ['L','K','J','H','G','F','D','S','A','A'],
+  ['Z','X','C','V','B','N','M','Q','W','E']
+];
+function drawWordGrid(){
+  const grid=document.getElementById('m2grid'); if(!grid) return;
+  grid.innerHTML='';
+  wordRows.flat().forEach(letter=>{
+    const div=document.createElement('div'); div.className='word-cell'; div.textContent=letter; grid.appendChild(div);
+  });
+}
+function solveWordSearch(){
+  drawWordGrid();
+  const cells=[0,1,2,3,4,5, 12,13,14,15,16, 27,28,29,30,31,32, 30,31,32,33]; // enough highlighted
+  document.querySelectorAll('#m2grid .word-cell').forEach((c,i)=>{if(cells.includes(i)) c.classList.add('found');});
+  const fb=document.getElementById('m2wordfb');
+  fb.className='feedback ok'; fb.textContent='Has encontrado las palabras ocultas. El memorice vegetal se ha abierto.';
+  advanceStage('m2');
+}
+const memoryCardsData = [
+  ['Xilema','E1'], ['Transporta savia bruta','E1'],
+  ['Floema','E2'], ['Reparte savia elaborada','E2'],
+  ['Raíz','E3'], ['Absorbe agua y sales','E3'],
+  ['Hojas','E4'], ['Fabrican alimento','E4']
+];
+function initMemory(){
+  const grid=document.getElementById('memoryGrid'); if(!grid) return;
+  if(state.memoryDeckBuilt) return;
+  const shuffled=[...memoryCardsData].sort(()=>Math.random()-0.5);
+  state.memoryDeck = shuffled.map((x,i)=>({text:x[0], pair:x[1], flipped:false, matched:false, idx:i}));
+  state.memoryDeckBuilt=true;
+  renderMemory();
+}
+function renderMemory(){
+  const grid=document.getElementById('memoryGrid'); if(!grid) return;
+  grid.innerHTML='';
+  state.memoryDeck.forEach(card=>{
+    const div=document.createElement('button');
+    div.className='memory-card' + ((card.flipped||card.matched)?' flipped':'');
+    if(card.matched) div.classList.add('matched');
+    div.textContent=(card.flipped||card.matched)?card.text:'?';
+    div.onclick=()=>flipMemory(card.idx);
+    grid.appendChild(div);
+  });
+}
+function flipMemory(idx){
+  const card=state.memoryDeck[idx];
+  if(card.matched||card.flipped||state.memorySelection.length===2) return;
+  card.flipped=true; state.memorySelection.push(idx); renderMemory();
+  if(state.memorySelection.length===2){
+    const [a,b]=state.memorySelection.map(i=>state.memoryDeck[i]);
+    if(a.pair===b.pair){
+      a.matched=true; b.matched=true; state.memoryMatched += 1; state.memorySelection=[];
+      document.getElementById('memoryfb').className='feedback ok';
+      document.getElementById('memoryfb').textContent='¡Pareja correcta!';
+      if(state.memoryMatched===4){
+        document.getElementById('memoryfb').textContent='Memorice completado. La savia viva libera su sello.';
+        completeMission('m2');
+      }
+    }else{
+      setTimeout(()=>{a.flipped=false; b.flipped=false; state.memorySelection=[]; renderMemory();},700);
+      document.getElementById('memoryfb').className='feedback no';
+      document.getElementById('memoryfb').textContent='No coinciden. Observa y vuelve a intentarlo.';
+    }
+  }
+}
+
+/* M3 */
+const m3answers={q1:false,q2:false,q3:false};
+function m3quiz(n,correct,btn){
+  btn.parentElement.querySelectorAll('.option').forEach(b=>b.classList.add('disabled'));
+  btn.classList.add(correct?'correct':'incorrect');
+  if(correct) m3answers['q'+n]=true;
+  const fb=document.getElementById('m3quizfb');
+  fb.className=correct?'feedback ok':'feedback no';
+  fb.textContent=correct?'Respuesta correcta.':'Esa opción no corresponde.';
+  if(m3answers.q1&&m3answers.q2&&m3answers.q3){fb.className='feedback ok';fb.textContent='Quiz superado. Ahora completa la frase del ecosistema.'; advanceStage('m3');}
+}
+function normalize(str){return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
+function checkM3Fill(){
+  const a=normalize(document.getElementById('m3f1').value), b=normalize(document.getElementById('m3f2').value), c=normalize(document.getElementById('m3f3').value);
+  const ok = a==='productores' && b==='consumidores' && c==='descomponedores';
+  const fb=document.getElementById('m3fillfb');
+  if(ok){fb.className='feedback ok';fb.textContent='Frase correcta. Los guardianes del bosque liberan su sello.'; completeMission('m3');}
+  else{fb.className='feedback no';fb.textContent='La frase aún no está completa correctamente.';}
+}
+
+/* M4 */
+const m4answers={q1:false,q2:false,q3:false};
+function selectSort(item,btn){state.sortSelection.push(item);btn.classList.add('selected');btn.disabled=true;}
+function resetSort(){state.sortSelection=[];document.querySelectorAll('.sort-btn').forEach(b=>{b.classList.remove('selected');b.disabled=false;});}
+function checkSort(){
+  const ok = state.sortSelection.join(',')==='sol,pasto,conejo,zorro';
+  const fb=document.getElementById('m4sortfb');
+  if(ok){fb.className='feedback ok';fb.textContent='Secuencia correcta. El quiz del flujo se ha abierto.'; advanceStage('m4');}
+  else{fb.className='feedback no';fb.textContent='El orden aún no es correcto. Reinicia e inténtalo otra vez.';}
+}
+function m4quiz(n,correct,btn){
+  btn.parentElement.querySelectorAll('.option').forEach(b=>b.classList.add('disabled'));
+  btn.classList.add(correct?'correct':'incorrect');
+  if(correct) m4answers['q'+n]=true;
+  const fb=document.getElementById('m4quizfb');
+  fb.className=correct?'feedback ok':'feedback no';
+  fb.textContent=correct?'Respuesta correcta.':'Esa opción no explica bien el flujo.';
+  if(m4answers.q1&&m4answers.q2&&m4answers.q3){fb.className='feedback ok';fb.textContent='Quiz completado. El camino de la energía libera su sello.'; completeMission('m4');}
+}
+
+/* M5 */
+const m5answers={q1:false,q2:false,q3:false};
+function checkM5Match(){
+  const ok = document.getElementById('m5a').value==='peces' && document.getElementById('m5b').value==='arboles' && document.getElementById('m5c').value==='caza';
+  const fb=document.getElementById('m5matchfb');
+  if(ok){fb.className='feedback ok';fb.textContent='Relaciones correctas. El análisis final de la red ya se ha abierto.'; advanceStage('m5');}
+  else{fb.className='feedback no';fb.textContent='Aún hay impactos mal relacionados.';}
+}
+function m5quiz(n,correct,btn){
+  btn.parentElement.querySelectorAll('.option').forEach(b=>b.classList.add('disabled'));
+  btn.classList.add(correct?'correct':'incorrect');
+  if(correct) m5answers['q'+n]=true;
+  const fb=document.getElementById('m5quizfb');
+  fb.className=correct?'feedback ok':'feedback no';
+  fb.textContent=correct?'Respuesta correcta.':'Esa opción no refleja el comportamiento de la red.';
+  if(m5answers.q1&&m5answers.q2&&m5answers.q3){fb.className='feedback ok';fb.textContent='Quiz completado. La red invisible libera su sello.'; completeMission('m5');}
+}
+
+/* M6 */
+const m6answers={q1:false,q2:false,q3:false};
+function m6quiz(n,correct,btn){
+  btn.parentElement.querySelectorAll('.option').forEach(b=>b.classList.add('disabled'));
+  btn.classList.add(correct?'correct':'incorrect');
+  if(correct) m6answers['q'+n]=true;
+  const fb=document.getElementById('m6quizfb');
+  fb.className=correct?'feedback ok':'feedback no';
+  fb.textContent=correct?'Respuesta correcta.':'El núcleo aún no acepta esa explicación.';
+  if(m6answers.q1&&m6answers.q2&&m6answers.q3){fb.className='feedback ok';fb.textContent='Caso integrador resuelto. Ya puedes activar el código final.'; advanceStage('m6');}
+}
+function checkM6Code(){
+  const val = normalize(document.getElementById('m6code').value).replace(/\s/g,'').toUpperCase();
+  const fb=document.getElementById('m6codefb');
+  if(val==='SSVFR'){fb.className='feedback ok';fb.textContent='Código aceptado. El núcleo del santuario ha despertado.'; completeMission('m6');}
+  else{fb.className='feedback no';fb.textContent='Código incorrecto. Usa la primera letra de cada clave recuperada.';}
+}
+
+/* General progression */
+function advanceStage(id){
+  const prog=state.missionProgress[id];
+  prog.stage += 1;
+  toast('Mecanismo activado','Un nuevo compartimento acaba de abrirse dentro de la cámara.');
+  openMission(id);
+  if(id==='m2') setTimeout(initMemory, 50);
+}
+function completeMission(id){
+  const prog=state.missionProgress[id];
+  if(prog.completed) return;
+  prog.completed=true;
+  state.solvedCount++;
+  const m=missions.find(x=>x.id===id);
+  if(m.key) state.completedKeys.push(m.key);
+  if(!state.skills.includes(m.skill)) state.skills.push(m.skill);
+  const idx=missions.findIndex(x=>x.id===id);
+  if(idx+1<missions.length) state.missionProgress[missions[idx+1].id].unlocked=true;
+  updateProgress();
+  toast('Sello restaurado',`Has completado ${m.name}. Clave obtenida: ${m.key||'NÚCLEO'}.`);
+  if(id==='m6'){endGame(); return;}
+  openMission(id);
+}
+function useHint(missionId){
+  const m=missions.find(x=>x.id===missionId);
+  if(state.freeHint){state.freeHint=false;showModal('Pista del santuario',`<p>${m.hint}</p><p class="micro" style="margin-top:10px">Tu pista gratuita ha sido utilizada.</p>`);return;}
+  state.time=Math.max(0,state.time-120); updateTimerDisplay();
+  showModal('Pista del santuario',`<p>${m.hint}</p><p class="micro" style="margin-top:10px">Se consumieron 2 minutos de energía.</p>`);
+}
+function showTheory(missionId){
+  const m=missions.find(x=>x.id===missionId);
+  showModal(m.name,`<p><strong>Resumen clave:</strong></p><ul>${m.theory.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+}
+function showHelp(){
+  showModal('Cómo jugar',`<p>Esta versión es más larga y diversa.</p><ul><li>Cada misión tiene varias <strong>etapas internas</strong>.</li><li>Podrás encontrar pareados, quiz, sopa de letras, memorice, completar frases y secuencias.</li><li>Al completar todas las etapas internas, liberas el <strong>sello final</strong> de la cámara.</li><li>Las pistas ayudan, pero normalmente consumen tiempo.</li></ul>`);
+}
+function showModal(title,html){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').innerHTML=html;document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function toast(title,text){const el=document.getElementById('toast');document.getElementById('toastTitle').textContent=title;document.getElementById('toastText').textContent=text;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),2600);}
+function endGame(){
+  clearInterval(timerInterval);
+  document.getElementById('game').classList.remove('active');
+  document.getElementById('final').classList.add('active');
+  document.getElementById('finalName').textContent=state.playerName;
+  document.getElementById('finalRank').textContent=document.getElementById('hudRank').textContent;
+  document.getElementById('finalTime').textContent=document.getElementById('timer').textContent;
+}
+</script>
+</body>
+</html>
